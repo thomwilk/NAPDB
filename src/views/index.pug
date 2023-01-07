@@ -1,0 +1,54 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(http-equiv='X-UA-Compatible' content='IE=edge')
+  meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC' crossorigin='anonymous')
+  link(href='/public/css/styles.css' rel='stylesheet')
+  title No Agenda Producer Database - Home
+body
+nav.navbar.dark.bg-dark
+  .container-fluid
+    a.navbar-brand(href='/')
+      img.d-inline-block.align-text-top(src='/public/images/na_logo.png' alt='No Agenda Show logo' width='30' height='30')
+      |             No Agenda Producer Database
+    form.d-flex(role='search' action='/search')
+      input.form-control.me-2(type='search' placeholder='Search' aria-label='Search')
+      button.btn.btn-outline-success(type='submit') Search
+.container
+  .row.pt-4
+    .col
+      h4 Episode Credits
+      .cards
+        each credit in episodeCredits
+          .card.episode-credit
+            ul.list-group.list-group-flush
+              li.list-group-item.credit-item
+                a(href="/episodes/"+credit.number)
+                  h5 #{credit.number}
+                  h6.title #{credit.title}
+                h6.dateLength #{credit.date} | #{credit.length}
+                h6.artist #{credit.artist}
+    .col
+      h4 Recent Credits
+      .cards
+        each credit in recentCredits
+          .card.recent-credit
+            ul.list-group.list-group-flush
+              li.list-group-item.credit-item
+                h5
+                  a(href="/producer/"+credit.producer) #{credit.producer}
+                h6 #{credit.type}
+                h6
+                  a(href="/episodes/"+credit.episode_number) #{credit.episode_number}
+    .col
+      h4(style="margin-left:-80px;") Frequent Producers
+      .cards
+      each producer in freqProducers
+        .card.producer-item
+          ul.list-group.list-group-flush
+            li.list-group-item.credit-item
+              h6
+                a(href="/producer/" + producer._id) #{producer._id}
+          span.badge #{producer.count}
+script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js' integrity='sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM' crossorigin='anonymous')
