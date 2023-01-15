@@ -1,71 +1,72 @@
 require("dotenv").config()
+const fs = require("fs")
+const client = require("https")
 
-const {
-  add_credit,
-  add_episode,
-  last_episode_saved
-} = require("./db")
+const { add_credit, add_episode, last_episode_saved } = require("./db")
 
-const {
-  get_latest_episode_number,
-  get_episode_date,
-  get_episode_html,
-  get_episode_length,
-  get_episode_title,
-  get_artist,
-  get_producers,
-  download_art,
-} = require("./dataExtract")
+const { extractor } = require("./extractor")
 
 const process_episode = async (episode_num = null) => {
-  console.log("Episode Num " + episode_num)
   if (episode_num == null) {
-    episode_num = await get_latest_episode_number()
+    episode_num = parseInt(await last_episode_saved()) + 1
   }
-  const episode_html = await get_episode_html(`${episode_num}`)
-  const episode_date = await get_episode_date(episode_html)
-  const episode_title = await get_episode_title(episode_html)
-  const episode_length = await get_episode_length(episode_html)
-  const episode_artist = await get_artist(episode_html)
-  const executive_producers = await get_producers(episode_html, "exec")
-  const associcate_producers = await get_producers(episode_html, "assoc")
+
+  const html = await extractor(episode_num)
+
+  const episode_date = html.epDate
+  const episode_title = html.epTitle
+  const episode_length = html.epLength
+  const episode_artist = html.epArtist
+  const executive_producers = html.epExecs
+  const associcate_producers = html.epAssocs
 
   console.log(`======== Start processing episode ${episode_num} ========`)
 
   for (let i = 0; i < executive_producers.length; i++) {
     const credit = {
-      "producer": executive_producers[i],
-      "type": "Executive",
-      "episode_number": episode_num
+      producer: executive_producers[i],
+      type: "Executive",
+      episode_number: episode_num,
     }
     await add_credit(credit)
   }
 
   for (let i = 0; i < associcate_producers.length; i++) {
     const credit = {
-      "producer": associcate_producers[i],
-      "type": "Associcate",
-      "episode_number": episode_num
+      producer: associcate_producers[i],
+      type: "Associcate",
+      episode_number: episode_num,
     }
     await add_credit(credit)
   }
 
   const episode = {
-    "number": episode_num,
-    "title": episode_title,
-    "date": episode_date,
-    "length": episode_length,
-    "artist": episode_artist,
+    number: episode_num,
+    title: episode_title,
+    date: episode_date,
+    length: episode_length,
+    artist: episode_artist,
   }
 
   add_episode(episode)
 
+  const download_art = async (episode_num) => {
+    const url =
+      "https://www.noagendashow.net/media/cache/cover_small/" +
+      episode_num +
+      ".png"
+    const filepath = "./art/" + episode_num + ".png"
+    client.get(url, (res) => {
+      res.pipe(fs.createWriteStream(filepath))
+    })
+  }
+
   await download_art(`${episode_num}`)
 
   const art_credit = {
-    "producer": episode_artist,
-    "type": "Artist",
-    "episode_number": episode_num
+    producer: episode_artist,
+    type: "Artist",
+    episode_number: episode_num,
   }
 
   await add_credit(art_credit)
@@ -73,14 +74,13 @@ const process_episode = async (episode_num = null) => {
   console.log(`======== Finished processing episode ${episode_num} ========`)
 }
 
-const update_database = async() => {
+const update_database = async () => {
   const latest_saved = await last_episode_saved()
-  const latest_published = await get_latest_episode_number()
-  if (latest_saved == latest_published) {
+  episode_num = parseInt(await last_episode_saved())
+  if (latest_saved == episode_num) {
     console.log("The database is up to date")
-  }
-  else {
-    for (let i = latest_saved + 1; i <= latest_published; i++) {
+  } else {
+    for (let i = latest_saved + 1; i <= episode_num; i++) {
       await process_episode(i)
     }
   }
@@ -95,5 +95,5 @@ const process_batch = async (first, last) => {
 }
 
 //process_episode(612)
-//process_batch(612, 1474)
+//process_batch(612, 1520)
 update_database()
