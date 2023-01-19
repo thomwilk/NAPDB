@@ -24,10 +24,13 @@ nav.navbar.dark.bg-dark
           .card.episode-credit
             ul.list-group.list-group-flush
               li.list-group-item.credit-item
-                a(href="/episodes/"+credit.number)
-                  h5 #{credit.number}
-                  h6.title #{credit.title}
-                h6.dateLength #{credit.date} | #{credit.length}
+                div(class="sideBySide")
+                  img(class="art" src="/art/"+credit.number+".png")
+                div(class="sideBySide")
+                  a(href="/episode/"+credit.number)
+                    h5 #{credit.number}
+                    h6.title #{credit.title}
+                  h6.dateLength #{credit.date} | #{credit.length}
                 h6.artist #{credit.artist}
     .col
       h4 Recent Credits
@@ -36,11 +39,16 @@ nav.navbar.dark.bg-dark
           .card.recent-credit
             ul.list-group.list-group-flush
               li.list-group-item.credit-item
-                h5
-                  a(href="/producer/"+credit.producer) #{credit.producer}
-                h6 #{credit.type}
-                h6
-                  a(href="/episodes/"+credit.episode_number) #{credit.episode_number}
+                div(class="sideBySide")
+                  img(class="art" src="/art/"+credit.episode_number+".png")
+                div(class="sideBySide recent-credit")
+                  h6
+                    a(href="/producer/"+credit.producer) #{credit.producer}
+                  br
+                  h6
+                    a(href="/episode/"+credit.episode_number) #{credit.episode_number}
+                  br
+                  h6 #{credit.type}
     .col
       h4(style="margin-left:-80px;") Frequent Producers
       .cards

@@ -7,6 +7,7 @@ var { EpisodeModel } = require('./schemas/EpisodeSchema.cjs')
 const pug = require('pug')
 const indexFunction = pug.compileFile('./src/views/index.pug');
 const producerFunction = pug.compileFile('./src/views/producer.pug');
+const episodeFunction = pug.compileFile('./src/views/episode.pug');
 
 var tablesort = require('tablesort')
 
@@ -44,6 +45,18 @@ async function producer_credits(alias) {
         .toArray()
     await client.close()
     return credits
+}
+
+async function episode_credits(query) {
+    const client = new MongoClient(uri, { useNewUrlParser: true })
+    await client.connect()
+    await client.db("NAPDB").collection("episodes").createIndex({ title: 1, artist: 1 })
+    const episodes = await client.db("NAPDB").collection("episodes")
+        .find({ $or: [{ title: { $regex : query, $options: 'i' } }, { artist: { $regex : query, $options: 'i' } }, { number: parseInt(query) }] })
+        .sort({field1: 1})
+        .toArray()
+    await client.close()
+    return episodes
 }
 
 async function get_episode_info(ep_number) {
@@ -92,7 +105,7 @@ module.exports = function (app) {
 
         for (const credit of credits) {
             const episode = await get_episode_info(credit.episode_number)
-            producerCredits.push({ "producer": credit.producer, "epNum": credit.episode_number, "epTitle": episode.title, "epDate": episode.date })
+            producerCredits.push({ "producer": credit.producer, "epNum": credit.episode_number, "epTitle": episode.title, "epDate": episode.date, "credType": credit.type })
         }
 
         res.send(producerFunction({
@@ -100,4 +113,19 @@ module.exports = function (app) {
         }))
     })
     
+    //==========================================================
+
+    app.get('/episode/:searchQuery?', async (req, res) => {
+        const searchQuery = req.params.searchQuery
+        const credits = await episode_credits(searchQuery)
+        let episodeCredits = Array();
+
+        for (const credit of credits) {
+            episodeCredits.push({ "epNumber": credit.number, "epTitle": credit.title, "epDate": credit.date, "epLength": credit.length, "epArtist": credit.artist })
+        }
+
+        res.send(episodeFunction({
+            "episodeCredits": episodeCredits,
+        }))
+    })
 }

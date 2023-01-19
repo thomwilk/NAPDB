@@ -4,13 +4,13 @@ const client = require("https")
 
 const { add_credit, add_episode, last_episode_saved } = require("./db")
 
-const { extractor } = require("./extractor")
+const { extractor, newest_episode } = require("./extractor")
 
 const process_episode = async (episode_num = null) => {
   if (episode_num == null) {
     episode_num = parseInt(await last_episode_saved()) + 1
   }
-
+  
   const html = await extractor(episode_num)
 
   const episode_date = html.epDate
@@ -76,13 +76,13 @@ const process_episode = async (episode_num = null) => {
 
 const update_database = async () => {
   const latest_saved = await last_episode_saved()
-  episode_num = parseInt(await last_episode_saved())
-  if (latest_saved == episode_num) {
+  const newest_ep = await newest_episode()
+  if (latest_saved == newest_ep) {
     console.log("The database is up to date")
-  } else {
-    for (let i = latest_saved + 1; i <= episode_num; i++) {
-      await process_episode(i)
-    }
+    return 0
+  }
+  for (let i = latest_saved + 1; i <= newest_ep; i++) {
+    await process_episode(i)
   }
   process.exit(0)
 }
@@ -95,5 +95,5 @@ const process_batch = async (first, last) => {
 }
 
 //process_episode(612)
-//process_batch(612, 1520)
+//process_batch(616, 1520)
 update_database()
