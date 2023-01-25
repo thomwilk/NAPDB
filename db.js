@@ -1,14 +1,22 @@
+const { trim } = require('jquery')
 const { default: mongoose } = require('mongoose')
 
 const MongoClient = require('mongodb').MongoClient
 const uri = 'mongodb://127.0.0.1:27017/?directConnection=true'
 
 async function add_credit(credit) {
-  console.log(credit)
-  const client = new MongoClient(uri, { useNewUrlParser: true })
+  if(credit.producer.trim() == "") return
+  let client = new MongoClient(uri, { useNewUrlParser: true })
   await client.connect()
   const exists = await client.db("NAPDB").collection("credits").findOne({ producer: credit.producer, type: credit.type, episode_number: credit.episode_number })
   if (exists !== null) return `Credit already saved`
+  if (credit.type == "Artist" && credit.producer.indexOf("getalby.com") > -1) {
+      let arr = credit.producer.split(" ");
+      credit.cryptoAddress = arr[arr.length - 1]
+    arr.pop()
+    credit.producer = arr.join(" ")
+    credit.producer.replace(/ -$/i, "")
+  }
   await client.db("NAPDB").collection("credits").insertOne(credit)
   await client.close()
   console.log(`${credit.type} producer credit saved for ${credit.producer}, Episode: ${credit.episode_number}`)

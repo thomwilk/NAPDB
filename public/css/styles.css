@@ -56,6 +56,7 @@ h1, h4 {
 
 .credit-item a, .credit-item h6 {
   display:inline-block;
+  text-decoration: none;
 }
 
 .credit-item img {
@@ -137,6 +138,10 @@ th {
 
 .dateLength {
   display: inline;
+}
+
+table.table {
+  background-color: #fff;
 }
 
 /* RESPONSIVE */

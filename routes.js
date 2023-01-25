@@ -8,8 +8,7 @@ const pug = require('pug')
 const indexFunction = pug.compileFile('./src/views/index.pug');
 const producerFunction = pug.compileFile('./src/views/producer.pug');
 const episodeFunction = pug.compileFile('./src/views/episode.pug');
-
-var tablesort = require('tablesort')
+const searchFunction = pug.compileFile('./src/views/search.pug');
 
 async function last_ten_episodes() {
     const client = new MongoClient(uri, { useNewUrlParser: true })
@@ -36,6 +35,11 @@ async function last_ten_credits() {
 }
   
 async function producer_credits(alias) {
+    if (alias.indexOf("getalby.com") > -1) {
+        let arr = alias.split(" ");
+        arr.pop()
+        alias = arr.join(" ")
+    }
     const searchQuery = RegExp(".*" + alias + ".*", "i")
     const client = new MongoClient(uri, { useNewUrlParser: true })
     await client.connect()
@@ -50,10 +54,16 @@ async function producer_credits(alias) {
 async function episode_credits(query) {
     const client = new MongoClient(uri, { useNewUrlParser: true })
     await client.connect()
-    await client.db("NAPDB").collection("episodes").createIndex({ title: 1, artist: 1 })
+    await client.db("NAPDB").collection("episodes").createIndex({ title: 1, artist: 1, date: 1 })
     const episodes = await client.db("NAPDB").collection("episodes")
-        .find({ $or: [{ title: { $regex : query, $options: 'i' } }, { artist: { $regex : query, $options: 'i' } }, { number: parseInt(query) }] })
-        .sort({field1: 1})
+        .find({
+            $or: [
+                { title: { $regex: query, $options: 'i' } },
+                { date: { $regex: query, $options: 'i' } },
+                { artist: { $regex: query, $options: 'i' } },
+                { number: parseInt(query) }]
+        })
+        .sort({number: -1})
         .toArray()
     await client.close()
     return episodes
@@ -71,7 +81,9 @@ async function get_episode_info(ep_number) {
       const client = new MongoClient(uri, { useNewUrlParser: true })
       await client.connect()
       const producers = await client.db("NAPDB").collection("credits")
-    .aggregate([
+          .aggregate([
+              { $match: { producer: { $exists: true, $ne: "", } } },
+              { $match: { producer: { $exists: true, $ne: "Anonymous", } } },
         { $group: { _id: "$producer", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 10 }
@@ -126,6 +138,31 @@ module.exports = function (app) {
 
         res.send(episodeFunction({
             "episodeCredits": episodeCredits,
+        }))
+    })
+    //==========================================================
+
+    app.get('/search/:searchQuery?', async (req, res) => {
+        const searchQuery = req.params.searchQuery
+        const ep_credits = await episode_credits(searchQuery)
+        const prod_credits = await producer_credits(searchQuery)
+
+        let episodeCredits = Array()
+        let producerCredits = Array()
+
+        for (const credit of ep_credits) {
+            episodeCredits.push({ "epNumber": credit.number, "epTitle": credit.title, "epDate": credit.date, "epLength": credit.length, "epArtist": credit.artist })
+        }
+
+        for (const credit of prod_credits) {
+            const episode = await get_episode_info(credit.episode_number)
+            producerCredits.push({ "producer": credit.producer, "epNum": credit.episode_number, "epTitle": episode.title, "epDate": episode.date, "credType": credit.type })
+        }
+
+        res.send(searchFunction({
+            "searchQuery": searchQuery,
+            "episodeCredits": episodeCredits,
+            "producerCredits": producerCredits
         }))
     })
 }

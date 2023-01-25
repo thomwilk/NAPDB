@@ -15,6 +15,7 @@
     "axios": "^0.21.4",
     "body-parser": "^1.20.1",
     "bootstrap": "^5.2.0",
+    "bootstrap-table": "^1.21.2",
     "cheerio": "^1.0.0-rc.9",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
@@ -29,8 +30,7 @@
     "pug": "^3.0.2",
     "puppeteer": "^15.5.0",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6",
-    "tablesort": "^5.3.0"
+    "request-promise": "^4.2.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

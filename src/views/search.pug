@@ -1,0 +1,104 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(http-equiv='X-UA-Compatible' content='IE=edge')
+  meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC' crossorigin='anonymous')
+  link(rel='stylesheet', href='https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css')
+  link(rel='stylesheet', href='https://mottie.github.io/tablesorter/css/theme.bootstrap.css')
+
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
+  link(href='/public/css/styles.css' rel='stylesheet')
+  title No Agenda Producer Database - Search
+body 
+- const query = searchQuery
+nav.navbar.dark.bg-dark
+  .container-fluid
+    a.navbar-brand(href='/')
+      img.d-inline-block.align-text-top(src='/public/images/na_logo.png' alt='No Agenda Show logo' width='30' height='30')
+      |             No Agenda Producer Database
+    form.d-flex(role='search' action='/search')
+      input.form-control.me-2(type='search' placeholder='producer, episode #, name or date' value=query aria-label='Search')
+      button.btn.btn-outline-success(type='submit') Search
+.container
+  .row.pt-4
+    .container-fluid
+      h1 Results for 
+        span(style="font-style:italic; font-size:89%;") #{query}
+  .row.pt-4
+    .container-fluid
+      table(style="background-color:#fff; width:100%")
+        thead
+          tr
+            th Date
+            th Number
+            th Title 
+            th Length
+            th Art, Artist
+        tbody
+          each credit in episodeCredits
+            -var imgSrc = "/art/" + credit.epNumber + ".png"
+            tr
+              td(class="text-center") #{credit.epDate}
+              td(class="text-center")
+                a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNumber) #{credit.epNumber}
+              td(class="text-center")
+                a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNumber) #{credit.epTitle}
+              td(class="text-end") #{credit.epLength}
+              td(class="text-center")
+                a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNumber)
+                  img(src=imgSrc class='art')
+                  br
+                  span #{credit.epArtist}
+          .row.pt-4
+            .container-fluid
+              h1 Producer Credits
+              script(type='text/javascript').
+                $(function() {
+                  $("table.tablesorter").tablesorter({
+                    sortList: [[0,0]],
+                    // set bootstrap theme
+                    theme : 'bootstrap',
+                    // icon needed for bootstrap theme
+                    headerTemplate : '{content} {icon}',
+                    // uitheme widget needed to apply bootstrap
+                    widgets : [ 'uitheme', 'filter', 'pager' ],
+                    widgetOptions : {
+                      pager_css: {
+                        container   : 'tablesorter-pager',    // class added to make included pager.css file work
+                        errorRow    : 'tablesorter-errorRow', // error information row (don't include period at beginning); styled in theme file
+                        disabled    : 'disabled'              // class added to arrows @ extremes (i.e. prev/first arrows "disabled" on first page)
+                      },
+                      pager_container : ".pager",
+                      pager_output : '{startRow} - {endRow} / {filteredRows} ({totalRows})',
+                      pager_size: 10,
+                      zebra : [ "normal-row", "alt-row"],
+                    },
+                  });
+                });
+
+              div(class="pager")
+              table.tablesorter(style="width:100%")
+                thead
+                  tr
+                    th Producer
+                    th Type
+                    th Date
+                    th Number
+                    th Title 
+                tbody
+                  each credit in producerCredits
+                    - const imgSrc = "/art/" + credit.epNum + ".png"
+                    tr
+                      td 
+                        a(href="/producer/"+credit.producer) #{credit.producer}
+                      td #{credit.credType}
+                      td(class="text-end") #{credit.epDate}
+                      td 
+                        a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNum) #{credit.epNum}
+                      td(class="text-center")
+                        a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNum)
+                          img(class="art" src=imgSrc)
+                          br
+                          span #{credit.epTitle}
+script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js' integrity='sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM' crossorigin='anonymous')

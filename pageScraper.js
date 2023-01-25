@@ -1,16 +1,15 @@
 require("dotenv").config()
-const fs = require("fs")
 const client = require("https")
-
+const axios = require("axios")
 const { add_credit, add_episode, last_episode_saved } = require("./db")
 
-const { extractor, newest_episode } = require("./extractor")
+const { extractor, newest_episode, download_art } = require("./extractor")
 
 const process_episode = async (episode_num = null) => {
   if (episode_num == null) {
     episode_num = parseInt(await last_episode_saved()) + 1
   }
-  
+
   const html = await extractor(episode_num)
 
   const episode_date = html.epDate
@@ -48,18 +47,7 @@ const process_episode = async (episode_num = null) => {
     artist: episode_artist,
   }
 
-  add_episode(episode)
-
-  const download_art = async (episode_num) => {
-    const url =
-      "https://www.noagendashow.net/media/cache/cover_small/" +
-      episode_num +
-      ".png"
-    const filepath = "./art/" + episode_num + ".png"
-    client.get(url, (res) => {
-      res.pipe(fs.createWriteStream(filepath))
-    })
-  }
+  add_episode(episode)  
 
   await download_art(`${episode_num}`)
 
