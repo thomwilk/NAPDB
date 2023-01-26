@@ -29,25 +29,28 @@ nav.navbar.dark.bg-dark
       div(class="table-responsive")
         table(class="table")
           tr
-            th Date
-            th Number
-            th Title 
-            th Length
-            th Art, Artist
+            th(data-filter-control='select', data-sortable='true') Date
+            th(data-filter-control='select', data-sortable='true') Number
+            th(data-filter-control='select', data-sortable='true') Title 
+            th(data-filter-control='select', data-sortable='true') Producer
+            th(data-filter-control='select', data-sortable='true') Type
+            th(data-filter-control='select', data-sortable='true') Art, Artist
           tbody
             each credit in episodeCredits
-              -var imgSrc = "/art/" + credit.epNumber + ".png"
+              -var imgSrc = "/art/" + credit.episode_number + ".png"
               tr
-                td(class="text-center") #{credit.epDate}
+                td(class="text-center") #{credit.episode_date}
                 td(class="text-center")
-                  a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNumber) #{credit.epNumber}
+                  a(target="_blank" href="https://noagendashow.net/listen/"+credit.episode_number) #{credit.episode_number}
                 td(class="text-center")
-                  a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNumber) #{credit.epTitle}
-                td(class="text-end") #{credit.epLength}
+                  a(target="_blank" href="https://noagendashow.net/listen/"+credit.episode_number) #{credit.title}
+                td(class="text-center") 
+                  a(href="/producer/"+credit.producer) #{credit.producer}
+                td(class="text-center") #{credit.type}
                 td(class="text-center")
-                  a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNumber)
-                    img(src=imgSrc class='art')
-                    br
-                    span #{credit.epArtist}
+                  a(target="_blank" href="https://noagendashow.net/listen/"+credit.episode_number)
+                    img(class="art" src=imgSrc)
+                  br
+                  a(href="/producer/"+credit.episode_artist) #{credit.episode_artist}
 
 script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js' integrity='sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM' crossorigin='anonymous')

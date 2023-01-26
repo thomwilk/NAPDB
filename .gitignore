@@ -1,4 +1,6 @@
 .env
 .vscode
+art/
 node_modules/
 dbQueries.js
+test.js

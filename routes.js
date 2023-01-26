@@ -39,6 +39,7 @@ async function producer_credits(alias) {
         let arr = alias.split(" ");
         arr.pop()
         alias = arr.join(" ")
+        alias = alias.replace(/ -$/i, "")
     }
     const searchQuery = RegExp(".*" + alias + ".*", "i")
     const client = new MongoClient(uri, { useNewUrlParser: true })
@@ -52,18 +53,18 @@ async function producer_credits(alias) {
 }
 
 async function episode_credits(query) {
+    console.log(query)
     const client = new MongoClient(uri, { useNewUrlParser: true })
     await client.connect()
-    await client.db("NAPDB").collection("episodes").createIndex({ title: 1, artist: 1, date: 1 })
-    const episodes = await client.db("NAPDB").collection("episodes")
+    await client.db("NAPDB").collection("credits").createIndex({ producer: 1, type: 1, episode_number: -1 })
+    const episodes = await client.db("NAPDB").collection("credits")
         .find({
             $or: [
-                { title: { $regex: query, $options: 'i' } },
-                { date: { $regex: query, $options: 'i' } },
-                { artist: { $regex: query, $options: 'i' } },
-                { number: parseInt(query) }]
+                { producer: { $regex: query, $options: 'i' } },
+                { type: { $regex: query, $options: 'i' } },
+                { episode_number: parseInt(query) }]
         })
-        .sort({number: -1})
+        .sort({episode_number: -1})
         .toArray()
     await client.close()
     return episodes
@@ -133,26 +134,20 @@ module.exports = function (app) {
         let episodeCredits = Array();
 
         for (const credit of credits) {
-            episodeCredits.push({ "epNumber": credit.number, "epTitle": credit.title, "epDate": credit.date, "epLength": credit.length, "epArtist": credit.artist })
+            const episode = await get_episode_info(credit.episode_number)
+            episodeCredits.push({ "episode_number": credit.episode_number, "type": credit.type, "producer": credit.producer, "title": episode.title, "episode_length": episode.length, "episode_date": episode.date, "episode_artist": episode.artist })
         }
-
         res.send(episodeFunction({
-            "episodeCredits": episodeCredits,
+            episodeCredits,
         }))
     })
     //==========================================================
 
     app.get('/search/:searchQuery?', async (req, res) => {
         const searchQuery = req.params.searchQuery
-        const ep_credits = await episode_credits(searchQuery)
         const prod_credits = await producer_credits(searchQuery)
 
-        let episodeCredits = Array()
         let producerCredits = Array()
-
-        for (const credit of ep_credits) {
-            episodeCredits.push({ "epNumber": credit.number, "epTitle": credit.title, "epDate": credit.date, "epLength": credit.length, "epArtist": credit.artist })
-        }
 
         for (const credit of prod_credits) {
             const episode = await get_episode_info(credit.episode_number)
@@ -161,7 +156,6 @@ module.exports = function (app) {
 
         res.send(searchFunction({
             "searchQuery": searchQuery,
-            "episodeCredits": episodeCredits,
             "producerCredits": producerCredits
         }))
     })

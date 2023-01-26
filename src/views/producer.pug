@@ -23,35 +23,35 @@ html
     .row.pt-4
       .container-fluid
         h1 Producer Credits
-    .row.pt-4
-      .container-fluid
-        div(style="text-align: right") 
-            button#export-json(class="btn btn-success me-3" type="button") Export JSON
-            button#export-csv(class="btn btn-success" type="button") Export CSV 
-        div(class="table-responsive")
-          table(data-toggle="true" data-search="true" data-search-align="right")
-            thead
-              tr
-                th(data-filter-control='select', data-sortable='true') Producer
-                th(data-filter-control='select', data-sortable='true') Type
-                th(data-filter-control='select', data-sortable='true') Date
-                th(data-filter-control='select', data-sortable='true') Number
-                th(data-filter-control='select', data-sortable='true') Title 
-            tbody
-              each credit in producerCredits
-                - const imgSrc = "/art/" + credit.epNum + ".png"
-                tr
-                  td 
-                    a(href="/producer/"+credit.producer) #{credit.producer}
-                  td #{credit.credType}
-                  td(class="text-end") #{credit.epDate}
-                  td
-                    a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNum) #{credit.epNum}
-                  td(class="text-center")
-                    a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNum)
-                      img(class="art" src=imgSrc)
-                      br
-                      span #{credit.epTitle}
+        .row.pt-4
+          .container-fluid
+            div(style="text-align: right") 
+                button#export-json(class="btn btn-success me-3" type="button") Export JSON
+                button#export-csv(class="btn btn-success" type="button") Export CSV 
+            div(class="table-responsive")
+              table(data-toggle="true" data-search="true" data-search-align="right")
+                thead
+                  tr
+                    th(data-filter-control='select', data-sortable='true') Producer
+                    th(data-filter-control='select', data-sortable='true') Type
+                    th(data-filter-control='select', data-sortable='true') Date
+                    th(data-filter-control='select', data-sortable='true') Number
+                    th(data-filter-control='select', data-sortable='true') Title 
+                tbody
+                  each credit in producerCredits
+                    - const imgSrc = "/art/" + credit.epNum + ".png"
+                    tr
+                      td(class="text-center" style="max-width:300px;") 
+                        a(href="/producer/"+credit.producer) #{credit.producer}
+                      td(class="text-center") #{credit.credType}
+                      td(class="text-end") #{credit.epDate}
+                      td(class="text-end")
+                        a(href="/episode/"+credit.epNum) #{credit.epNum}
+                      td(class="text-center")
+                        a(target="_blank" href="https://noagendashow.net/listen/"+credit.epNum)
+                          img(class="art" src=imgSrc)
+                          br
+                          span #{credit.epTitle}
 
     script(src='https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.2.0/papaparse.min.js')
@@ -59,26 +59,23 @@ html
     script(src='https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.js')
     script.
       $(document).ready(function() {
-          function exportJson(data) {
-              var json = JSON.stringify(data);
-              var blob = new Blob([json], {type: "application/json"});
-              var url = URL.createObjectURL(blob);
-              var a = document.createElement('a');
-              a.href = url;
-              a.download = 'NoAgendaCredits.json';
-              a.click();
-          }
-          
           function exportCsv(data) {
-              var csv = Papa.unparse(data);
-              var blob = new Blob([csv], {type: "text/csv"});
-              var url = URL.createObjectURL(blob);
-              var a = document.createElement('a');
-              a.href = url;
-              a.download = 'NoAgendaCredits.csv'; 
-              a.click();
+            var newData = data.map(function(item) {
+                return {
+                    producer: item.producer,
+                    type: item.type,
+                    episode_number: JSON.stringify(item.episode_number),
+                }
+            });
+            var csv = Papa.unparse(newData);
+            var blob = new Blob([csv], {type: "text/csv"});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'NoAgendaCredits.csv';
+            a.click();
           }
-          
+    
           $('table').bootstrapTable();
 
           $('#export-json').click(function() {
