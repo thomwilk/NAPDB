@@ -1,6 +1,9 @@
 require("dotenv").config()
+const request = require('request')
 const client = require("https")
+const fs = require('fs')
 const axios = require("axios")
+
 const { add_credit, add_episode, last_episode_saved } = require("./db")
 
 const { extractor, newest_episode, download_art } = require("./extractor")

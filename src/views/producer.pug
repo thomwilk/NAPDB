@@ -61,10 +61,15 @@ html
       $(document).ready(function() {
           function exportCsv(data) {
             var newData = data.map(function(item) {
+              const alias = item[0].match(/(?<=href=")[^"]+/)[0].replace('/producer/', '');
+              const episode_num = item[3].match(/(?<=href=")[^"]+/)[0].replace('/episode/', '');
+              const episode_title = item[4].match(/(?<=<span>)[^<]+/)[0];
                 return {
-                    producer: item.producer,
-                    type: item.type,
-                    episode_number: JSON.stringify(item.episode_number),
+                    Producer: alias,
+                    Type: item[1],
+                    "Episode Date": item[2],
+                    "Episode Number": episode_num,
+                    "Episode Title": episode_title,
                 }
             });
             var csv = Papa.unparse(newData);
@@ -72,9 +77,32 @@ html
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
             a.href = url;
-            a.download = 'NoAgendaCredits.csv';
+            a.download = 'NAProducerCredits.csv';
             a.click();
           }
+
+          function exportJson(data) {
+            var newData = data.map(function(item) {
+              const alias = item[0].match(/(?<=href=")[^"]+/)[0].replace('/producer/', '');
+              const episode_num = item[3].match(/(?<=href=")[^"]+/)[0].replace('/episode/', '');
+              const episode_title = item[4].match(/(?<=<span>)[^<]+/)[0];
+              return {
+                Producer: alias,
+                Type: item[1],
+                "Episode Date": item[2],
+                "Episode Number": episode_num,
+                "Episode Title": episode_title,
+              }
+            });
+            var json = JSON.stringify(newData);
+            var blob = new Blob([json], {type: "application/json"});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'NAProducerCredits.json';
+            a.click();
+          }
+
     
           $('table').bootstrapTable();
 

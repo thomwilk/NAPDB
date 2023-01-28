@@ -1,6 +1,5 @@
-const { response } = require('@hapi/hapi/lib/validation');
 const fs = require('fs')
-const fsp = require('fs').promises
+const request = require('request');
 const axios = require('axios');
 const cheerio = require('cheerio');
 
@@ -31,34 +30,34 @@ async function newest_episode() {
   return episode_num
 }
 
+ 
 async function download_art(epNum) {
-  url = "https://www.noagendashow.net/media/cache/cover_small/" + epNum + ".png"
-  try {
-      const response = await axios({
-          method: "GET",
-          url: url,
-          responseType: "stream"
-      })
-      const dir = './art/';
-      try {
-          await fsp.stat(dir)
-      } catch (err) {
-          if (err.code === 'ENOENT') {
-              await fsp.mkdir(dir)
-          }
-      }
-      const fileName = `${dir}${epNum}.png`
-      const file = fs.createWriteStream(fileName)
-      response.data.pipe(file)
-      file.on('finish', () => {
-          console.log("Episode's art has been saved")
-      })
-      return fileName
-  } catch (error) {
-      console.log(error)
-  }
-}
+  const url = `https://www.noagendashow.net/media/cache/cover_small/${epNum}.png`
+  const dest = `./art/${epNum}.png`
 
+  /* Create an empty file where we can save data */
+  const file = fs.createWriteStream(dest);
+
+  /* Using Promises so that we can use the ASYNC AWAIT syntax */
+  await new Promise((resolve, reject) => {
+    request({
+      /* Here you should specify the exact link to the file you are trying to download */
+      uri: url,
+      gzip: true,
+    })
+        .pipe(file)
+        .on('finish', async () => {
+          console.log(`Episode ${epNum}'s art downloaded`);
+          resolve();
+        })
+        .on('error', (error) => {
+          reject(error);
+        });
+  })
+      .catch((error) => {
+        console.log(`Error: ${error}`);
+      });
+}
 
 module.exports = {
   extractor,
