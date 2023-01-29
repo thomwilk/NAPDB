@@ -23,7 +23,7 @@ html
     .container
       .row.pt-4
         .container-fluid
-          h1 Episodes
+          h1 Episode Credits
       .row.pt-4
         .container-fluid
           div(style="text-align: right") 
@@ -45,17 +45,17 @@ html
                     tr
                       td(class="text-center") #{credit.episode_date}
                       td(class="text-center")
-                        a(target="_blank" href="https://noagendashow.net/listen/"+credit.episode_number) #{credit.episode_number}
+                        a(target="_blank" href="https://www.noagendashow.net/listen/"+credit.episode_number) #{credit.episode_number}
                       td(class="text-center")
-                        a(target="_blank" href="https://noagendashow.net/listen/"+credit.episode_number) #{credit.title}
+                        a(target="_blank" href="https://www.noagendashow.net/listen/"+credit.episode_number) #{credit.title}
                       td(class="text-center") 
                         a(href="/producer/"+credit.producer) #{credit.producer}
                       td(class="text-center") #{credit.type}
                       td(class="text-center")
-                        a(target="_blank" href="https://noagendashow.net/listen/"+credit.episode_number)
+                        a(href="/producer/"+credit.episode_artist)
                           img(class="art" src=imgSrc)
-                        br
-                        a(href="/producer/"+credit.episode_artist) #{credit.episode_artist}
+                          br
+                          span #{credit.episode_artist}
 
     script(src='https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.2.0/papaparse.min.js')
@@ -70,7 +70,7 @@ html
               const episode_title = item[2].match(/(?<=<a[^>]*>)[^<]+/);
               const producer_alias = item[3].match(/(?<=<a[^>]*>)[^<]+/);
               const credit_type = item[4]
-              const artist = item[5].match(/(?<=<a[^>]*>)[^<]+/);
+              const artist = item[5].match(/(?<=<span[^>]*>)[^<]+/)[0]
               return {
                 "Episode Date": episode_date,
                 "Episode Number": episode_num,
@@ -88,7 +88,6 @@ html
             a.download = 'NAEpisodeCredits.csv';
             a.click();
           }
-
           function exportJson(data) {
             var newData = data.map(function(item) {
               const episode_date = item[0]; 
@@ -96,7 +95,7 @@ html
               const episode_title = item[2].match(/(?<=<a[^>]*>)[^<]+/)[0].replace(/[\[\]]/, '');
               const producer_alias = item[3].match(/(?<=<a[^>]*>)[^<]+/)[0].replace(/[\[\]]/, '');
               const credit_type = item[4]
-              const artist = item[5].match(/(?<=<a[^>]*>)[^<]+/)[0].replace(/[\[\]]/, '');
+              const artist = item[5].match(/(?<=<span[^>]*>)[^<]+/)[0]
               return {
                 "Episode Date": episode_date,
                 "Episode Number": episode_num,
