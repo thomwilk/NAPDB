@@ -39,6 +39,7 @@ async function last_ten_credits() {
 }
 
 async function producer_credits(alias) {
+  if (alias === undefined) alias = ""
   if (alias.indexOf("getalby.com") > -1) {
     let arr = alias.split(" ");
     arr.pop();
@@ -52,6 +53,32 @@ async function producer_credits(alias) {
     .db("NAPDB")
     .collection("credits")
     .find({ producer: searchQuery })
+    .sort({ episode_number: -1 })
+    .toArray();
+  await client.close();
+  return credits;
+}
+
+async function producer_search_credits(alias) {
+  if (alias.indexOf("getalby.com") > -1) {
+    let arr = alias.split(" ");
+    arr.pop();
+    alias = arr.join(" ");
+    alias = alias.replace(/ -$/i, "");
+  }
+  const searchQuery = RegExp(".*" + alias + ".*");
+  const client = new MongoClient(uri, { useNewUrlParser: true });
+  await client.connect();
+  const credits = await client
+    .db("NAPDB")
+    .collection("credits")
+    .find({
+      $or: [
+        { producer: { $regex: searchQuery, $options: "i" } },
+        { type: { $regex: searchQuery, $options: "i" } },
+        { episode_number: parseInt(searchQuery) },
+      ],
+    })
     .sort({ episode_number: -1 })
     .toArray();
   await client.close();
@@ -178,9 +205,10 @@ module.exports = function (app) {
   });
   //==========================================================
 
-  app.get("/search/:searchQuery?", async (req, res) => {
+  app.get("/search/:searchQuery", async (req, res) => {
     const searchQuery = req.params.searchQuery;
-    const prod_credits = await producer_credits(searchQuery);
+    
+    const prod_credits = await producer_search_credits(searchQuery);
 
     let producerCredits = Array();
 
@@ -194,11 +222,11 @@ module.exports = function (app) {
         credType: credit.type,
       });
     }
-
+    
     res.send(
       searchFunction({
-        searchQuery: searchQuery,
-        producerCredits: producerCredits,
+        searchQuery,
+        producerCredits,
       })
     );
   });
