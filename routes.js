@@ -59,55 +59,6 @@ async function producer_credits(alias) {
   return credits;
 }
 
-async function producer_search_credits(alias) {
-  if (alias.indexOf("getalby.com") > -1) {
-    let arr = alias.split(" ");
-    arr.pop();
-    alias = arr.join(" ");
-    alias = alias.replace(/ -$/i, "");
-  }
-  const searchQuery = RegExp(".*" + alias + ".*");
-  const client = new MongoClient(uri, { useNewUrlParser: true });
-  await client.connect();
-  const credits = await client
-    .db("NAPDB")
-    .collection("credits")
-    .find({
-      $or: [
-        { producer: { $regex: searchQuery, $options: "i" } },
-        { type: { $regex: searchQuery, $options: "i" } },
-        { episode_number: parseInt(searchQuery) },
-      ],
-    })
-    .sort({ episode_number: -1 })
-    .toArray();
-  await client.close();
-  return credits;
-}
-
-async function episode_credits(query) {
-  const client = new MongoClient(uri, { useNewUrlParser: true });
-  await client.connect();
-  await client
-    .db("NAPDB")
-    .collection("credits")
-    .createIndex({ producer: 1, type: 1, episode_number: -1 });
-  const episodes = await client
-    .db("NAPDB")
-    .collection("credits")
-    .find({
-      $or: [
-        { producer: { $regex: query, $options: "i" } },
-        { type: { $regex: query, $options: "i" } },
-        { episode_number: parseInt(query) },
-      ],
-    })
-    .sort({ episode_number: -1 })
-    .toArray();
-  await client.close();
-  return episodes;
-}
-
 async function get_episode_info(ep_number) {
   const client = new MongoClient(uri, { useNewUrlParser: true });
   await client.connect();
@@ -138,6 +89,32 @@ async function top_twenty_producers() {
   return producers;
 }
 
+async function search_collections(searchTerm) {
+  const client = new MongoClient(uri, { useNewUrlParser: true });
+  try {
+    await client.connect();
+    const db = client.db("NAPDB");
+    const credits_collection = db.collection("credits");
+    const episode_collection = db.collection("episodes");
+
+    await credits_collection.createIndex({ "$**": "text" });
+    await episode_collection.createIndex({ "$**": "text" });
+
+    const credit_results = await credits_collection.find({ $text: { $search: searchTerm } }).toArray();
+    const episode_results = await episode_collection.find({ $text: { $search: searchTerm } }).toArray();
+
+    return {credit_results, episode_results};
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    if (client) {
+      client.close();
+    }
+  }
+}
+
+
 module.exports = function (app) {
   app.get("/", async (req, res) => {
     const episodes = await last_ten_episodes();
@@ -154,6 +131,48 @@ module.exports = function (app) {
   });
 
   //==========================================================
+
+  app.get("/search/:searchQuery?", async (req, res) => {
+    const searchQuery = req.query.searchQuery;
+    const searchResults = await search_collections(searchQuery)
+
+    const producerCredits = searchResults.credit_results
+    const episodeCredits = searchResults.episode_results
+
+    
+    for (const credit of producerCredits) {
+      if(credit.episode_number === undefined) credit.episode_number = credit.epNum
+      const episode = await get_episode_info(credit.episode_number);
+      console.log(credit)
+      producerCredits.push({
+        producer: credit.producer,
+        epNum: credit.episode_number,
+        epTitle: episode.title,
+        epDate: episode.date,
+        credType: credit.type,
+      });
+    }
+    
+    for (const credit of episodeCredits) {
+      const episode = await get_episode_info(credit.number);
+      episodeCredits.push({
+        episode_date: episode.date,
+        episode_number: credit.episode_number,
+        title: episode.title,
+        episode_artist: episode.artist,
+        producer: credit.producer,
+        type: credit.type,
+      });
+    }
+    
+    res.send(
+      searchFunction({
+        searchQuery,
+        producerCredits,
+        episodeCredits,
+      })
+    );
+  });
 
   app.get("/producer/:alias?", async (req, res) => {
     const alias = req.params.alias;
@@ -174,59 +193,6 @@ module.exports = function (app) {
     res.send(
       producerFunction({
         producerCredits: producerCredits,
-      })
-    );
-  });
-
-  //==========================================================
-
-  app.get("/episode/:searchQuery?", async (req, res) => {
-    const searchQuery = req.params.searchQuery;
-    const credits = await episode_credits(searchQuery);
-    let episodeCredits = Array();
-
-    for (const credit of credits) {
-      const episode = await get_episode_info(credit.episode_number);
-      episodeCredits.push({
-        episode_number: credit.episode_number,
-        type: credit.type,
-        producer: credit.producer,
-        title: episode.title,
-        episode_length: episode.length,
-        episode_date: episode.date,
-        episode_artist: episode.artist,
-      });
-    }
-    res.send(
-      episodeFunction({
-        episodeCredits,
-      })
-    );
-  });
-  //==========================================================
-
-  app.get("/search/:searchQuery", async (req, res) => {
-    const searchQuery = req.params.searchQuery;
-    
-    const prod_credits = await producer_search_credits(searchQuery);
-
-    let producerCredits = Array();
-
-    for (const credit of prod_credits) {
-      const episode = await get_episode_info(credit.episode_number);
-      producerCredits.push({
-        producer: credit.producer,
-        epNum: credit.episode_number,
-        epTitle: episode.title,
-        epDate: episode.date,
-        credType: credit.type,
-      });
-    }
-    
-    res.send(
-      searchFunction({
-        searchQuery,
-        producerCredits,
       })
     );
   });

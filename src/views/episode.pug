@@ -16,8 +16,8 @@ html
         a.navbar-brand(href='/')
           img.d-inline-block.align-text-top(src='/public/images/na_logo.png' alt='No Agenda Show logo' width='30' height='30')
           |             No Agenda Producer Database
-        form.d-flex(role='search' action='/search')
-          input.form-control.me-2(type='search' placeholder='producer, episode, date' aria-label='Search')
+        form.d-flex(role='search' action='/search/')
+          input.form-control.me-2(type='search' name='searchQuery' placeholder='producer, episode, date' aria-label='Search')
           button.btn.btn-outline-success(type='submit') Search
     .container
       .row.pt-4
