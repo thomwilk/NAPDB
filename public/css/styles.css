@@ -140,6 +140,11 @@ th {
   display: inline;
 }
 
+.btn-na {
+  color: #fff;
+  background-color:#457b9d;
+}
+
 table.table {
   background-color: #fff;
 }
