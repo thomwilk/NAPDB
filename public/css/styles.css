@@ -140,7 +140,7 @@ th {
   display: inline;
 }
 
-.btn-na {
+.btn-na, .btn-na a:hover {
   color: #fff;
   background-color:#457b9d;
 }

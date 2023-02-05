@@ -8,6 +8,7 @@ html
     link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css')
     link(rel='stylesheet' href='https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.css')
     link(href='/public/css/jquery.dataTables.min.css' rel='stylesheet')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css')
     link(href='/public/css/styles.css' rel='stylesheet')
     title No Agenda Producer Database - Episode Credits
   body 
@@ -16,6 +17,40 @@ html
         a.navbar-brand(href='/')
           img.d-inline-block.align-text-top(src='/public/images/na_logo.png' alt='No Agenda Show logo' width='30' height='30')
           |             No Agenda Producer Database
+        button.btn.btn-na(data-toggle='modal', data-target='#myModal') Donate
+        .modal.fade(tabindex='-1', id='myModal', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+          .modal-dialog(role='document' class='modal-dialog modal-dialog-centered modal-lg')
+            .modal-content
+              .modal-header.text-center
+                h5#myModalLabel.modal-title.w-100 Value for Value Model
+                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                  span(aria-hidden='true') &times;
+              .modal-body
+                .container
+                  .row
+                    .col-md-6
+                      br
+                      img(src='./public/images/thom.png' width='100%' alt='Sir Crip Named Ben at his battlestation')
+                    .col-md-6
+                      p &nbsp;
+                      p In the morning my fellow producers!
+                      p Support the No Agenda Producer Database! Your donations keep me rolling and the NAPDB online. Thanks for your support!
+                      p(style='font-style:italic;') - Sir CripNamedBen
+                      div(style='margin 0 auto; text-align:center;')
+                        a(target='_blank' href='https://www.paypal.com/donate/?business=SM8Q3SDWGPMRG&no_recurring=1&currency_code=CAD')
+                          img(border='0' style="margin-top:20px;" src="./public/images/donate.png")
+              .modal-footer
+                button.btn.btn-na(type='button', data-dismiss='modal') Close
         form.d-flex(role='search' action='/search/')
           input.form-control.me-2(type='search' name='searchQuery' placeholder='producer, episode, date' aria-label='Search')
           button.btn.btn-na(type='submit') Search
+script(src='https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js')
+script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js')
+script.
+  $(document).ready(function() {
+    $(".modal-wide").on("show.bs.modal", function() {
+      var height = $(window).height() - 200;
+      $(this).find(".modal-body").css("max-height", height);
+    });
+  })
