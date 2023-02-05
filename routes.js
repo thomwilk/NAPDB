@@ -33,12 +33,10 @@ module.exports = function (app) {
   //==========================================================
 
   app.get("/search/:searchQuery?", async (req, res) => {
-    const searchQuery = req.query.searchQuery;
+    const searchQuery = req.params.searchQuery;
     const searchResults = await search_collections(searchQuery)
-    console.log(searchResults)
+    
     const producerCredits = searchResults.credit_results
-    const episodeCredits = searchResults.episode_results
-
     
     for (const credit of producerCredits) {
       if(credit.episode_number === undefined) credit.episode_number = credit.epNum
@@ -52,23 +50,10 @@ module.exports = function (app) {
       });
     }
     
-    for (const credit of episodeCredits) {
-      const episode = await get_episode_info(credit.number);
-      episodeCredits.push({
-        episode_date: episode.date,
-        episode_number: credit.episode_number,
-        title: episode.title,
-        episode_artist: episode.artist,
-        producer: credit.producer,
-        type: credit.type,
-      });
-    }
-    
     res.send(
       searchFunction({
         searchQuery,
         producerCredits,
-        episodeCredits,
       })
     );
   });

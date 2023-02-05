@@ -77,7 +77,7 @@ async function episode_credits(query) {
         $or: [
           { producer: { $regex: query, $options: "i" } },
           { type: { $regex: query, $options: "i" } },
-          { episode_number: parseInt(query) },
+          { episode_number: query },
         ],
       })
       .sort({ episode_number: -1 })
@@ -107,14 +107,14 @@ async function search_collections(searchTerm) {
       $or: [
         { producer: { $regex: searchTerm, $options: "i" } },
         { type: { $regex: searchTerm, $options: "i" } },
-        { episode_number: parseInt(searchTerm) },
+        //{ episode_number: parseInt(searchTerm) },
         { cryptoAddress: { $regex: searchTerm, $options: "i" } },
       ],
     }).toArray();
 
     const episode_results = await episode_collection.find({
       $or: [
-        { number: parseInt(searchTerm) },
+        //{ number: parseInt(searchTerm) },
         { title: { $regex: searchTerm, $options: "i" } },
         { date: { $regex: searchTerm, $options: "i" } },
         { artist: { $regex: searchTerm, $options: "i" } },

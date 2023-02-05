@@ -34,13 +34,16 @@ html
                     .col-md-6
                       p &nbsp;
                       p In the morning my fellow producers!
-                      p Support the No Agenda Producer Database! Your donations keep me rolling and the NAPDB online. Thanks for your support!
+                      p Support the No Agenda Producer Database! Your donations keep me rolling and the NAPDB online. A portion will be donated to TBPITU! Love and light!
                       p(style='font-style:italic;') - Sir CripNamedBen
                       div(style='margin 0 auto; text-align:center;')
-                        a(target='_blank' href='https://www.paypal.com/donate/?business=SM8Q3SDWGPMRG&no_recurring=1&currency_code=CAD')
-                          img(border='0' style="margin-top:20px;" src="./public/images/donate.png")
-              .modal-footer
-                button.btn.btn-na(type='button', data-dismiss='modal') Close
+                        form(action="https://www.paypal.com/donate", method="post", target="_top")
+                          input(type="hidden", name="business", value="SM8Q3SDWGPMRG")
+                          input(type="hidden", name="no_recurring", value="0")
+                          input(type="hidden", name="item_name", value="Support the No Agenda Producer Database! Your donations keep me rolling and the NAPDB online. Love and light!")
+                          input(type="hidden", name="currency_code", value="CAD")
+                          input(type="image", src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif", border="0", name="submit", title="PayPal - The safer, easier way to pay online!", alt="Donate with PayPal button")
+                          img(alt='', border="0", src="https://www.paypal.com/en_CA/i/scr/pixel.gif", width="1", height="1")
         form.d-flex(role='search' action='/search/')
           input.form-control.me-2(type='search' name='searchQuery' placeholder='producer, episode, date' aria-label='Search')
           button.btn.btn-na(type='submit') Search
