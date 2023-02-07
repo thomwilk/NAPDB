@@ -1,5 +1,5 @@
-.env
 .vscode
+.prettierrc
 art/
 node_modules/
 dbQueries.js

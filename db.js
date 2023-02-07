@@ -4,9 +4,10 @@ const { default: mongoose } = require('mongoose')
 const MongoClient = require('mongodb').MongoClient
 const uri = 'mongodb://127.0.0.1:27017/?directConnection=true'
 
+const client = new MongoClient(uri, { useNewUrlParser: true })
+
 async function add_credit(credit) {
   if(credit.producer.trim() == "") return
-  let client = new MongoClient(uri, { useNewUrlParser: true })
   await client.connect()
   const exists = await client.db("NAPDB").collection("credits").findOne({ producer: credit.producer, type: credit.type, episode_number: credit.episode_number })
   if (exists !== null) return `Credit already saved`
@@ -23,7 +24,6 @@ async function add_credit(credit) {
 }
 
 async function add_episode(episode) {
-  const client = new MongoClient(uri, { useNewUrlParser: true })
   await client.connect()
   const exists = await client.db("NAPDB").collection("episodes").findOne({ number: { $eq: episode.number } })
   if (exists !== null) return `Episode number ${episode.number} already saved`
@@ -33,7 +33,6 @@ async function add_episode(episode) {
 }
 
 async function last_episode_saved() {
-  const client = new MongoClient(uri, { useNewUrlParser: true })
   await client.connect()
   const last_episode_saved = await client.db("NAPDB").collection("episodes").find().sort({ number: 1 }).toArray()
   await client.close()

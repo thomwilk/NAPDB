@@ -5,7 +5,7 @@ const {
   producer_credits,
   episode_credits,
   get_episode_info,
-  search_collections
+  search_credits,
 } = require('./functions')
 
 const {
@@ -33,10 +33,8 @@ module.exports = function (app) {
   //==========================================================
 
   app.get("/search/:searchQuery?", async (req, res) => {
-    const searchQuery = req.params.searchQuery;
-    const searchResults = await search_collections(searchQuery)
-    
-    const producerCredits = searchResults.credit_results
+    const searchQuery = req.query.searchQuery;
+    const producerCredits = await search_credits(searchQuery)
     
     for (const credit of producerCredits) {
       if(credit.episode_number === undefined) credit.episode_number = credit.epNum
