@@ -42,11 +42,16 @@ const searchQuery = RegExp("." + alias + ".", "i");
 const client = await getClient();
 const credits = await client
 .db("NAPDB")
-.collection("credits")
-.find({ producer: searchQuery })
-.sort({ episode_number: -1 })
+  .collection("credits")
+  .find({$or: [
+          { producer: { $regex: searchQuery } },
+          { type: { $regex: searchQuery } },
+          { episode_number: parseInt(searchQuery) },
+        ],
+      })
+      .sort({ episode_number: -1 })
     .toArray();
-  client.close();
+  await client.close();
 return credits;
 }
 
