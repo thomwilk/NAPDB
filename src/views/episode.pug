@@ -28,10 +28,10 @@ include ./header
                   td(class="text-center")
                     a(target="_blank" href="https://www.noagendashow.net/listen/"+credit.episode_number) #{credit.title}
                   td(class="text-center") 
-                    a(href="/producer/"+credit.producer) #{credit.producer}
+                    a(target="_self" href="/producer/"+credit.producer) #{credit.producer}
                   td(class="text-center") #{credit.type}
                   td(class="text-center")
-                    a(href="/producer/"+credit.episode_artist)
+                    a(target="_self" href="/producer/"+credit.episode_artist)
                       img(class="art" src=imgSrc)
                       br
                       span #{credit.episode_artist}

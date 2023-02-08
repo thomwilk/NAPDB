@@ -22,13 +22,13 @@ include ./header
                   - const imgSrc = "/art/" + credit.epNum + ".png"
                   tr
                     td(class="text-center" style="max-width:300px;") 
-                      a(href="/producer/"+credit.producer) #{credit.producer}
+                      a(target="_self" href="/producer/"+credit.producer) #{credit.producer}
                     td(class="text-center") #{credit.credType}
                     td(class="text-end") #{credit.epDate}
                     td(class="text-end")
-                      a(href="/episode/"+credit.epNum) #{credit.epNum}
+                      a(target="_self" href="/episode/"+credit.epNum) #{credit.epNum}
                     td(class="text-center")
-                      a(target="_blank" href="/episode/"+credit.epNum)
+                      a(target="_self" href="/episode/"+credit.epNum)
                         img(class="art" src=imgSrc)
                         br
                         span #{credit.epTitle}

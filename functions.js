@@ -1,8 +1,11 @@
-const { connect, uri, MongoClient } = require("./mongodb");
+const MongoClient = require('mongodb').MongoClient;
+
+const uri = "mongodb://127.0.0.1:27017";
 
 async function getClient() {
-const client = await connect();
-return client;
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, maxPoolSize: 10 });
+  await client.connect();
+  return client;
 }
 
 async function last_ten_episodes() {
@@ -38,7 +41,7 @@ arr.pop();
 alias = arr.join(" ");
 alias = alias.replace(/ -$/i, "");
 }
-const searchQuery = RegExp("." + alias + ".", "i");
+const searchQuery = RegExp(".*" + alias + ".*", "i");
 const client = await getClient();
 const credits = await client
 .db("NAPDB")
@@ -56,16 +59,21 @@ return credits;
 }
 
 async function search_credits(searchTerm) {
-const searchQuery = RegExp("." + searchTerm + ".", "i");
-const client = await getClient();
-const producerCredits = await client
-.db("NAPDB")
-.collection("credits")
-.find({ producer: searchQuery })
-.sort({ episode_number: -1 })
-    .toArray();
-  client.close();
-return producerCredits;
+  const searchQuery = RegExp(".*" + searchTerm + ".*", "i");
+  const client = await getClient();
+  const producerCredits = await client
+  .db("NAPDB")
+  .collection("credits")
+  .find({$or: [
+    { producer: { $regex: searchQuery } },
+    { type: { $regex: searchQuery } },
+    { episode_number: parseInt(searchQuery) },
+    ],
+  })
+  .sort({ episode_number: -1 })
+      .toArray();
+    await client.close();
+  return producerCredits;
 }
 
 async function top_twenty_producers() {

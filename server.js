@@ -9,7 +9,7 @@ require('./routes')(app)
 app.set('view engine', 'pug')
 app.set('views', './src/views')
 
-mongoose.connect('mongodb://localhost:27017/NAPDB')
+//mongoose.connect('mongodb://localhost:27017/NAPDB')
 
 app.use(express.static(__dirname))
 app.use(express.json())
@@ -17,3 +17,10 @@ app.use(express.json())
 app.listen(port, function() {
     console.log('Node.js listening on port ' + port)
 })
+
+process.on('SIGINT', () => {
+    mongoose.connection.close().then(() => {
+      console.log('MongoDB connection closed');
+      process.exit();
+    });
+});
