@@ -32,12 +32,12 @@ module.exports = function (app) {
 
   //==========================================================
 
-  app.get("/search/:searchQuery?", async (req, res) => {
-    const searchQuery = req.query.searchQuery;
+  app.get("/search/", async (req, res) => {
+    const searchQuery = req.params.searchQuery;
     const producerCredits = await search_credits(searchQuery)
     
     for (const credit of producerCredits) {
-      if(credit.episode_number === undefined) credit.episode_number = credit.epNum
+      if (credit.episode_number === undefined) credit.episode_number = credit.epNum
       const episode = await get_episode_info(credit.episode_number);
       producerCredits.push({
         producer: credit.producer,

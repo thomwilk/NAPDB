@@ -1,126 +1,120 @@
-const MongoClient = require('mongodb').MongoClient;
+const uri = "mongodb://127.0.0.1:27017/?directConnection=true"
+const { MongoClient } = require("mongodb");
 
-const uri = "mongodb://127.0.0.1:27017";
-
-async function getClient() {
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, maxPoolSize: 10 });
-  await client.connect();
-  return client;
-}
+const client = new MongoClient(uri, { useNewUrlParser: true });
 
 async function last_ten_episodes() {
-const client = await getClient();
-const episodes = await client
-.db("NAPDB")
-.collection("episodes")
-.find()
-.sort({ _id: -1 })
-.limit(10)
+  await client.connect();
+  const episodes = await client
+    .db("NAPDB")
+    .collection("episodes")
+    .find()
+    .sort({ _id: -1 })
+    .limit(10)
     .toArray();
-  client.close();
-return episodes;
+  await client.close();
+  return episodes;
 }
 
 async function last_ten_credits() {
-const client = await getClient();
-const credits = await client
-.db("NAPDB")
-.collection("credits")
-.find().sort({ _id: -1 })
-.limit(10)
+  await client.connect();
+  const credits = await client
+    .db("NAPDB")
+    .collection("credits")
+    .find()
+    .sort({ _id: -1 })
+    .limit(10)
     .toArray();
-  client.close();
-return credits;
+  await client.close();
+  return credits;
 }
 
 async function producer_credits(alias) {
-if (alias === undefined) alias = "";
-if (alias.indexOf("getalby.com") > -1) {
-let arr = alias.split(" ");
-arr.pop();
-alias = arr.join(" ");
-alias = alias.replace(/ -$/i, "");
-}
-const searchQuery = RegExp(".*" + alias + ".*", "i");
-const client = await getClient();
-const credits = await client
-.db("NAPDB")
-  .collection("credits")
-  .find({$or: [
-          { producer: { $regex: searchQuery } },
-          { type: { $regex: searchQuery } },
-          { episode_number: parseInt(searchQuery) },
-        ],
-      })
-      .sort({ episode_number: -1 })
+  if (alias === undefined) alias = "";
+  if (alias.indexOf("getalby.com") > -1) {
+    let arr = alias.split(" ");
+    arr.pop();
+    alias = arr.join(" ");
+    alias = alias.replace(/ -$/i, "");
+  }
+  const searchQuery = RegExp(".*" + alias + ".*", "i"); 
+  await client.connect();
+  const credits = await client
+    .db("NAPDB")
+    .collection("credits")
+    .find({
+      $or: [
+        { producer: { $regex: searchQuery } },
+        { type: { $regex: searchQuery } },
+        { episode_number: parseInt(searchQuery) },
+      ],
+    })
+    .sort({ episode_number: -1 })
     .toArray();
-  await client.close();
-return credits;
+    await client.close();
+  return credits;
 }
 
 async function search_credits(searchTerm) {
   const searchQuery = RegExp(".*" + searchTerm + ".*", "i");
-  const client = await getClient();
+  await client.connect();
   const producerCredits = await client
   .db("NAPDB")
   .collection("credits")
-  .find({$or: [
-    { producer: { $regex: searchQuery } },
-    { type: { $regex: searchQuery } },
-    { episode_number: parseInt(searchQuery) },
-    ],
-  })
+  .find({ producer: { $regex: searchQuery } })
   .sort({ episode_number: -1 })
-      .toArray();
-    await client.close();
+  .toArray();
+  await client.close();
   return producerCredits;
+}  
+
+async function episode_credits(query) {
+  await client.connect();
+  await client
+    .db("NAPDB")
+    .collection("credits")
+    .createIndex({ producer: 1, type: 1, episode_number: -1 });
+  const episodes = await client
+    .db("NAPDB")
+    .collection("credits")
+    .find({
+      $or: [
+        { producer: { $regex: query, $options: "i" } },
+        { type: { $regex: query, $options: "i" } },
+        { episode_number: parseInt(query) },
+      ],
+    })
+    .sort({ episode_number: -1 })
+    .toArray();
+    await client.close();
+  return episodes;
 }
 
 async function top_twenty_producers() {
-const client = await getClient();
-const producers = await client
-.db("NAPDB")
-.collection("credits")
-.aggregate([
-{ $match: { producer: { $exists: true, $ne: "" } } },
-{ $match: { producer: { $exists: true, $ne: "Anonymous" } } },
-{ $group: { _id: "$producer", count: { $sum: 1 } } },
-{ $sort: { count: -1 } },
-{ $limit: 20 },
-])
-    .toArray();
-  client.close();
-return producers;
-}
-
-async function episode_credits(query) {
-const client = await getClient();
-await client
-.db("NAPDB")
-.collection("credits")
-.createIndex({ producer: 1, type: 1, episode_number: -1 });
-const episodes = await client
-.db("NAPDB")
-.collection("credits")
-.find({$or: [
-          { producer: { $regex: query, $options: "i" } },
-          { type: { $regex: query, $options: "i" } },
-          { episode_number: parseInt(query) },
-        ],
-      })
-      .sort({ episode_number: -1 })
+  await client.connect();
+  const producers = await client
+    .db("NAPDB")
+    .collection("credits")
+    .aggregate([
+      { $match: { producer: { $exists: true, $ne: "" } } },
+      { $match: { producer: { $exists: true, $ne: "Anonymous" } } },
+      { $group: { _id: "$producer", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 20 },
+    ])
     .toArray();
     await client.close();
-    return episodes;
-  }
-  
+
+  return producers;
+}
+
 async function get_episode_info(ep_number) {
-  const client = await getClient();
+  await client.connect();
   const episode = await client
     .db("NAPDB")
     .collection("episodes")
     .findOne({ number: ep_number });
-  client.close();
+  await client.close();
   return episode;
 }
 
@@ -132,4 +126,4 @@ module.exports = {
   get_episode_info,
   top_twenty_producers,
   search_credits,
-  }
+};
