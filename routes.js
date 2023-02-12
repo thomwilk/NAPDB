@@ -33,7 +33,7 @@ module.exports = function (app) {
   //==========================================================
 
   app.get("/search/", async (req, res) => {
-    const searchQuery = req.params.searchQuery;
+    const searchQuery = req.query.searchQuery;
     const producerCredits = await search_credits(searchQuery)
     
     for (const credit of producerCredits) {

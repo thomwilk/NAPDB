@@ -37,7 +37,7 @@ async function producer_credits(alias) {
     alias = arr.join(" ");
     alias = alias.replace(/ -$/i, "");
   }
-  const searchQuery = RegExp(".*" + alias + ".*", "i"); 
+  const searchQuery = RegExp(alias, "i"); 
   await client.connect();
   const credits = await client
     .db("NAPDB")
@@ -55,13 +55,18 @@ async function producer_credits(alias) {
   return credits;
 }
 
-async function search_credits(searchTerm) {
-  const searchQuery = RegExp(".*" + searchTerm + ".*", "i");
+async function search_credits(searchQuery) {
+  const searchTerm = RegExp(searchQuery, "i"); 
+  console.log(searchTerm)
   await client.connect();
+  await client
+    .db("NAPDB")
+    .collection("credits")
+    .createIndex({ producer: 1 });
   const producerCredits = await client
   .db("NAPDB")
   .collection("credits")
-  .find({ producer: { $regex: searchQuery } })
+    .find({ producer: { $regex: searchTerm } })
   .sort({ episode_number: -1 })
   .toArray();
   await client.close();
@@ -104,7 +109,6 @@ async function top_twenty_producers() {
     ])
     .toArray();
     await client.close();
-
   return producers;
 }
 
