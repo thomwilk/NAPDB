@@ -8,7 +8,7 @@ html
     link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css')
     link(rel='stylesheet' href='https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.css')
     link(href='/public/css/jquery.dataTables.min.css' rel='stylesheet')
-    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css')
+    link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css')
     link(href='/public/css/styles.css' rel='stylesheet')
     title No Agenda Producer Database
   body 
@@ -17,13 +17,13 @@ html
         a.navbar-brand(href='/')
           img.d-inline-block.align-text-top(src='/public/images/na_logo.png' alt='No Agenda Show logo' width='30' height='30')
           |             No Agenda Producer Database
-        button.btn.btn-na(data-toggle='modal', data-target='#myModal') Donate
-        .modal.fade(tabindex='-1', id='myModal', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+        button.btn.btn-na(data-toggle='modal' data-target='#myModal') Donate
+        .modal.fade(tabindex='-1' id='myModal' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true')
           .modal-dialog(role='document' class='modal-dialog modal-dialog-centered modal-lg')
             .modal-content
               .modal-header.text-center
                 h5#myModalLabel.modal-title.w-100 Value for Value Model
-                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                button.close(type='button' data-dismiss='modal' aria-label='Close')
                   span(aria-hidden='true') &times;
               .modal-body
                 .container
@@ -37,13 +37,12 @@ html
                       p Support the No Agenda Producer Database! Your donations keep me rolling and the NAPDB online. A portion will be donated to TBPITU! Love and light!
                       p(style='font-style:italic;') - Sir CripNamedBen
                       div(style='margin 0 auto; text-align:center;')
-                        form(action="https://www.paypal.com/donate", method="post", target="_top")
-                          input(type="hidden", name="business", value="SM8Q3SDWGPMRG")
-                          input(type="hidden", name="no_recurring", value="0")
-                          input(type="hidden", name="item_name", value="Support the No Agenda Producer Database! Your donations keep me rolling and the NAPDB online. Love and light!")
-                          input(type="hidden", name="currency_code", value="CAD")
-                          input(type="image", src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif", border="0", name="submit", title="PayPal - The safer, easier way to pay online!", alt="Donate with PayPal button")
-                          img(alt='', border="0", src="https://www.paypal.com/en_CA/i/scr/pixel.gif", width="1", height="1")
+                        form(action="https://www.paypal.com/donate" method="post" target="_top")
+                          input(type="hidden" name="business" value="SM8Q3SDWGPMRG")
+                          input(type="hidden" name="no_recurring" value="0")
+                          input(type="hidden" name="item_name" value="Support the No Agenda Producer Database! Your donations keep me rolling and the NAPDB online. Love and light!")
+                          input(type="hidden" name="currency_code" value="CAD")
+                          input(type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button")
         form.d-flex(role='search' action='/search/' method='get')
           input.form-control.me-2(type='search' name='searchQuery' placeholder='producer, episode, date' aria-label='Search')
           button.btn.btn-na(type='submit') Search

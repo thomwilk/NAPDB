@@ -6,14 +6,14 @@ const {
   episode_credits,
   get_episode_info,
   search_credits,
-} = require('./functions')
+} = require("./functions");
 
 const {
   indexFunction,
   producerFunction,
   episodeFunction,
   searchFunction,
-} = require('./views')
+} = require("./views");
 
 module.exports = function (app) {
   app.get("/", async (req, res) => {
@@ -32,12 +32,16 @@ module.exports = function (app) {
 
   //==========================================================
 
-  app.get("/search/", async (req, res) => {
-    const searchQuery = req.query.searchQuery;
-    const producerCredits = await search_credits(searchQuery)
+  app.get("/search", async (req, res) => {
+    const searchQuery = req.query.searchQuery
     
-    for (const credit of producerCredits) {
-      if (credit.episode_number === undefined) credit.episode_number = credit.epNum
+    let producerCredits = Array();
+    let episodeCredits = Array();
+    
+    const credits = await producer_credits(searchQuery);
+    for (const credit of credits) {
+      if (credit.episode_number === undefined)
+        credit.episode_number = credit.epNum;
       const episode = await get_episode_info(credit.episode_number);
       producerCredits.push({
         producer: credit.producer,
@@ -47,11 +51,28 @@ module.exports = function (app) {
         credType: credit.type,
       });
     }
-    
+
+    // ************* 
+     
+    const episodes = await episode_credits(searchQuery);
+
+    for (const credit of episodes) {
+      const episode = await get_episode_info(credit.episode_number);
+      episodeCredits.push({
+        episode_number: credit.episode_number,
+        type: credit.type,
+        producer: credit.producer,
+        title: episode.title,
+        episode_length: episode.length,
+        episode_date: episode.date,
+        episode_artist: episode.artist,
+      });
+    } 
+
     res.send(
       searchFunction({
-        searchQuery,
         producerCredits,
+        episodeCredits,
       })
     );
   });

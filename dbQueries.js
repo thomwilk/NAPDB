@@ -8,8 +8,8 @@ async function updateProducerInCredits() {
     const db = client.db('NAPDB');
     const collection = db.collection('credits');
     const updateResult = await collection.updateMany(
-      { "producer": { $regex: / -$/ } },
-      { $set: { "producer": { $substr: ["$producer", 0, -2] } } }
+      { "episode_number": 1529, "type": "Artist" },
+      { $set: { "producer": "Nessworks" } }
     );
     console.log(`${updateResult.matchedCount} document(s) matched the query criteria.`);
     console.log(`${updateResult.modifiedCount} document(s) was/were updated.`);

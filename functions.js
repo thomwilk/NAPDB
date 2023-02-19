@@ -1,10 +1,17 @@
-const uri = "mongodb://127.0.0.1:27017/?directConnection=true"
+const uri = "mongodb://127.0.0.1:27017/?directConnection=true";
 const { MongoClient } = require("mongodb");
 
-const client = new MongoClient(uri, { useNewUrlParser: true });
+let client;
+
+async function init() {
+  client = new MongoClient(uri, { useNewUrlParser: true });
+  client.connect();
+  console.log("Connected to MongoDB");
+}
+
+init();
 
 async function last_ten_episodes() {
-  await client.connect();
   const episodes = await client
     .db("NAPDB")
     .collection("episodes")
@@ -12,12 +19,10 @@ async function last_ten_episodes() {
     .sort({ _id: -1 })
     .limit(10)
     .toArray();
-  await client.close();
   return episodes;
 }
 
 async function last_ten_credits() {
-  await client.connect();
   const credits = await client
     .db("NAPDB")
     .collection("credits")
@@ -25,7 +30,6 @@ async function last_ten_credits() {
     .sort({ _id: -1 })
     .limit(10)
     .toArray();
-  await client.close();
   return credits;
 }
 
@@ -37,8 +41,7 @@ async function producer_credits(alias) {
     alias = arr.join(" ");
     alias = alias.replace(/ -$/i, "");
   }
-  const searchQuery = RegExp(alias, "i"); 
-  await client.connect();
+  const searchQuery = RegExp(alias, "i");
   const credits = await client
     .db("NAPDB")
     .collection("credits")
@@ -51,30 +54,20 @@ async function producer_credits(alias) {
     })
     .sort({ episode_number: -1 })
     .toArray();
-    await client.close();
   return credits;
 }
 
 async function search_credits(searchQuery) {
-  const searchTerm = RegExp(searchQuery, "i"); 
-  console.log(searchTerm)
-  await client.connect();
-  await client
-    .db("NAPDB")
-    .collection("credits")
-    .createIndex({ producer: 1 });
-  const producerCredits = await client
-  .db("NAPDB")
-  .collection("credits")
-    .find({ producer: { $regex: searchTerm } })
-  .sort({ episode_number: -1 })
-  .toArray();
-  await client.close();
-  return producerCredits;
-}  
+  const searchTerm = RegExp(/searchQuery/, "i");
+
+  const producerCredits = await producer_credits(searchTerm)
+  
+  const episodeCredits = await episode_credits(searchTerm)
+
+  return { searchQuery, episodeCredits, producerCredits }
+}
 
 async function episode_credits(query) {
-  await client.connect();
   await client
     .db("NAPDB")
     .collection("credits")
@@ -84,19 +77,17 @@ async function episode_credits(query) {
     .collection("credits")
     .find({
       $or: [
-        { producer: { $regex: query, $options: "i" } },
-        { type: { $regex: query, $options: "i" } },
+        { producer: { $regex: /query/, $options: "i" } },
+        { type: { $regex: /query/, $options: "i" } },
         { episode_number: parseInt(query) },
       ],
     })
     .sort({ episode_number: -1 })
     .toArray();
-    await client.close();
   return episodes;
 }
 
 async function top_twenty_producers() {
-  await client.connect();
   const producers = await client
     .db("NAPDB")
     .collection("credits")
@@ -108,17 +99,14 @@ async function top_twenty_producers() {
       { $limit: 20 },
     ])
     .toArray();
-    await client.close();
   return producers;
 }
 
 async function get_episode_info(ep_number) {
-  await client.connect();
   const episode = await client
     .db("NAPDB")
     .collection("episodes")
     .findOne({ number: ep_number });
-  await client.close();
   return episode;
 }
 
