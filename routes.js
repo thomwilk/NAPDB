@@ -6,6 +6,7 @@ const {
   episode_credits,
   get_episode_info,
   search_credits,
+  search_episodes,
 } = require("./functions");
 
 const {
@@ -52,9 +53,9 @@ module.exports = function (app) {
       });
     }
 
-    // ************* 
+    /************* 
      
-    const episodes = await episode_credits(searchQuery);
+    const episodes = await search_episodes(searchQuery);
 
     for (const credit of episodes) {
       const episode = await get_episode_info(credit.episode_number);
@@ -68,11 +69,12 @@ module.exports = function (app) {
         episode_artist: episode.artist,
       });
     } 
+    */
 
     res.send(
       searchFunction({
         producerCredits,
-        episodeCredits,
+        //episodeCredits,
       })
     );
   });

@@ -67,6 +67,26 @@ async function search_credits(searchQuery) {
   return { searchQuery, episodeCredits, producerCredits }
 }
 
+async function search_episodes(query) {
+  const searchQuery = RegExp(/query/, "i");
+  const episodes = await client
+    .db("NAPDB")
+    .collection("episodes")
+    .find({
+      $or: [
+        { number: parseInt(query) },
+        { title: { $regex: searchQuery } },
+        { date: { $regex: searchQuery } },
+        { length: { $regex: searchQuery } },
+        { artist: { $regex: searchQuery } },
+      ],
+    })
+    .sort({ episode_number: -1 })
+    .toArray();
+
+  return episodes;
+}
+
 async function episode_credits(query) {
   await client
     .db("NAPDB")
@@ -118,4 +138,5 @@ module.exports = {
   get_episode_info,
   top_twenty_producers,
   search_credits,
+  search_episodes,
 };
