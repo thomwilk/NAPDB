@@ -52,15 +52,12 @@ module.exports = function (app) {
         credType: credit.type,
       });
     }
-
-    /************* 
-     
     const episodes = await search_episodes(searchQuery);
 
     for (const credit of episodes) {
-      const episode = await get_episode_info(credit.episode_number);
+      const episode = await get_episode_info(credit.number);
       episodeCredits.push({
-        episode_number: credit.episode_number,
+        episode_number: credit.number,
         type: credit.type,
         producer: credit.producer,
         title: episode.title,
@@ -69,12 +66,11 @@ module.exports = function (app) {
         episode_artist: episode.artist,
       });
     } 
-    */
 
     res.send(
       searchFunction({
         producerCredits,
-        //episodeCredits,
+        episodeCredits,
       })
     );
   });

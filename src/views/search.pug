@@ -31,6 +31,37 @@ include ./header
                       img(class="art" src=imgSrc)
                       br
                       span #{credit.epTitle}
+  .row.pt-4
+    .container-fluid
+      .row.pt-4
+        div(class="table-responsive")
+          h2(style="color:#d0d0d0" class="text-center") Episode Credits
+          table(data-toggle="true" data-search="true" data-search-align="right")
+            thead
+              tr
+                th(data-filter-control='select', data-sortable='true') Date
+                th(data-filter-control='select', data-sortable='true') Number
+                th(data-filter-control='select', data-sortable='true') Title 
+                th(data-filter-control='select', data-sortable='true') Producer
+                th(data-filter-control='select', data-sortable='true') Type
+                th(data-filter-control='select', data-sortable='true') Art, Artist
+              tbody
+                each credit in episodeCredits
+                  -var imgSrc = "/art/" + credit.episode_number + ".png"
+                  tr
+                    td(class="text-center") #{credit.episode_date}
+                    td(class="text-center")
+                      a(target="_blank" href="https://www.noagendashow.net/listen/"+credit.episode_number) #{credit.episode_number}
+                    td(class="text-center")
+                      a(target="_blank" href="https://www.noagendashow.net/listen/"+credit.episode_number) #{credit.title}
+                    td(class="text-center") 
+                      a(target="_self" href="/producer/"+credit.producer) #{credit.producer}
+                    td(class="text-center") #{credit.type}
+                    td(class="text-center")
+                      a(target="_self" href="/producer/"+credit.episode_artist)
+                        img(class="art" src=imgSrc)
+                        br
+                        span #{credit.episode_artist}
                       
   script(src='https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.2.0/papaparse.min.js')

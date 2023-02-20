@@ -33,15 +33,16 @@ async function last_ten_credits() {
   return credits;
 }
 
-async function producer_credits(alias) {
-  if (alias === undefined) alias = "";
-  if (alias.indexOf("getalby.com") > -1) {
-    let arr = alias.split(" ");
+async function producer_credits(query) {
+  if (query === undefined) query = "";
+  const queryAsNum = parseInt(query);
+  if (query.indexOf("getalby.com") > -1) {
+    let arr = query.split(" ");
     arr.pop();
-    alias = arr.join(" ");
-    alias = alias.replace(/ -$/i, "");
+    query = arr.join(" ");
+    query = query.replace(/ -$/i, "");
   }
-  const searchQuery = RegExp(alias, "i");
+  const searchQuery = RegExp(query, "i");
   const credits = await client
     .db("NAPDB")
     .collection("credits")
@@ -49,7 +50,7 @@ async function producer_credits(alias) {
       $or: [
         { producer: { $regex: searchQuery } },
         { type: { $regex: searchQuery } },
-        { episode_number: parseInt(searchQuery) },
+        { episode_number: queryAsNum },
       ],
     })
     .sort({ episode_number: -1 })
@@ -67,18 +68,18 @@ async function search_credits(searchQuery) {
   return { searchQuery, episodeCredits, producerCredits }
 }
 
-async function search_episodes(query) {
-  const searchQuery = RegExp(/query/, "i");
+async function search_episodes(searchQuery) {
+  const searchQ = RegExp(searchQuery, "i");
   const episodes = await client
     .db("NAPDB")
     .collection("episodes")
     .find({
       $or: [
-        { number: parseInt(query) },
-        { title: { $regex: searchQuery } },
-        { date: { $regex: searchQuery } },
-        { length: { $regex: searchQuery } },
-        { artist: { $regex: searchQuery } },
+        { number: parseInt(searchQuery) },
+        { title: { $regex: searchQ } },
+        { date: { $regex: searchQ } },
+        { length: { $regex: searchQ } },
+        { artist: { $regex: searchQ } },
       ],
     })
     .sort({ episode_number: -1 })
@@ -88,10 +89,6 @@ async function search_episodes(query) {
 }
 
 async function episode_credits(query) {
-  await client
-    .db("NAPDB")
-    .collection("credits")
-    .createIndex({ producer: 1, type: 1, episode_number: -1 });
   const episodes = await client
     .db("NAPDB")
     .collection("credits")
