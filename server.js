@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-var port = 3000;
+const PORT = process.env.PORT || 3000;
 
 var mongoose = require("mongoose");
 
@@ -12,8 +12,8 @@ app.set("views", "./src/views");
 app.use(express.static(__dirname));
 app.use(express.json());
 
-app.listen(port, function () {
-  console.log("Node.js listening on port " + port);
+app.listen(PORT, function () {
+  console.log(`Node.js listening on port ${PORT}`);
 });
 
 process.on("SIGINT", () => {

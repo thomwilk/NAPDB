@@ -67,6 +67,7 @@ module.exports = function (app) {
 
     res.send(
       searchFunction({
+        searchQuery,
         producerCredits,
         episodeCredits,
       })
