@@ -58,8 +58,6 @@ module.exports = function (app) {
       const episode = await get_episode_info(credit.number);
       episodeCredits.push({
         episode_number: credit.number,
-        type: credit.type,
-        producer: credit.producer,
         title: episode.title,
         episode_length: episode.length,
         episode_date: episode.date,

@@ -42,8 +42,6 @@ include ./header
                 th(data-filter-control='select', data-sortable='true') Date
                 th(data-filter-control='select', data-sortable='true') Number
                 th(data-filter-control='select', data-sortable='true') Title 
-                th(data-filter-control='select', data-sortable='true') Producer
-                th(data-filter-control='select', data-sortable='true') Type
                 th(data-filter-control='select', data-sortable='true') Art, Artist
               tbody
                 each credit in episodeCredits
@@ -54,9 +52,6 @@ include ./header
                       a(target="_blank" href="https://www.noagendashow.net/listen/"+credit.episode_number) #{credit.episode_number}
                     td(class="text-center")
                       a(target="_blank" href="https://www.noagendashow.net/listen/"+credit.episode_number) #{credit.title}
-                    td(class="text-center") 
-                      a(target="_self" href="/producer/"+credit.producer) #{credit.producer}
-                    td(class="text-center") #{credit.type}
                     td(class="text-center")
                       a(target="_self" href="/producer/"+credit.episode_artist)
                         img(class="art" src=imgSrc)
