@@ -2,7 +2,7 @@ const { trim } = require("jquery");
 const { default: mongoose } = require("mongoose");
 
 const MongoClient = require("mongodb").MongoClient;
-const uri = "mongodb://127.0.0.1:27017/?directConnection=true";
+const uri = "mongodb+srv://thom:8EVxCgFZ3a3MxiR3@napdb.vne25ew.mongodb.net/NAPDB";
 
 const client = new MongoClient(uri, { useNewUrlParser: true });
 

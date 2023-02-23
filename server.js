@@ -13,22 +13,9 @@ app.set("views", "./src/views");
 app.use(express.static(__dirname));
 app.use(express.json());
 
-mongoose.set("strictQuery", false);
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI)
-    console.log(`MongoDB Connected: ${conn.connection.host}`)
-  } catch (err) {
-    console.error(err)
-    process.exit(1)
-  }
-}
- 
-connectDB().then(() => {
 app.listen(PORT, function () {
   console.log(`Node.js listening on port ${PORT}`);
 });
-})
 
 process.on("SIGINT", () => {
   mongoose.connection.close().then(() => {
