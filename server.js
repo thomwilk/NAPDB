@@ -1,4 +1,5 @@
-require("dotenv").config({ path: "./.env"});
+require("dotenv").config({ path: "./.env" });
+const { MongoClient } = require("mongodb");
 var express = require("express");
 var mongoose = require("mongoose");
 var app = express();
@@ -7,8 +8,8 @@ const PORT = process.env.PORT || 3000;
 mongoose.set('strictQuery', false);
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const conn = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
+    console.log(`MongoDB Connected`);
   } catch (err) {
     console.error(err);
     process.exit(1);
@@ -23,8 +24,10 @@ app.set("views", "./src/views");
 app.use(express.static(__dirname));
 app.use(express.json());
 
-app.listen(PORT, function () {
-  console.log(`Node.js listening on port ${PORT}`);
+connectDB().then(() => {
+  app.listen(PORT, function () {
+    console.log(`Node.js listening on port ${PORT}`);
+  });
 });
 
 process.on("SIGINT", () => {
