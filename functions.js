@@ -1,10 +1,11 @@
-const uri = "mongodb://127.0.0.1:27017/?directConnection=true";
+require("dotenv").config({ path: "./.env"});
+
 const { MongoClient } = require("mongodb");
 
 let client;
 
 async function init() {
-  client = new MongoClient(uri, { useNewUrlParser: true });
+  client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
   client.connect();
   console.log("Connected to MongoDB");
 }

@@ -1,10 +1,8 @@
 const { trim } = require("jquery");
 const { default: mongoose } = require("mongoose");
-
+require("dotenv").config({ path: "./.env"});
 const MongoClient = require("mongodb").MongoClient;
-const uri = "mongodb+srv://thom:8EVxCgFZ3a3MxiR3@napdb.vne25ew.mongodb.net/NAPDB";
-
-const client = new MongoClient(uri, { useNewUrlParser: true });
+const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
 
 async function add_credit(credit) {
   if (credit.producer.trim() == "") return;

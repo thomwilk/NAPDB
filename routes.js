@@ -5,7 +5,6 @@ const {
   producer_credits,
   episode_credits,
   get_episode_info,
-  search_credits,
   search_episodes,
 } = require("./functions");
 

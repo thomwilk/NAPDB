@@ -1,9 +1,19 @@
 require("dotenv").config({ path: "./.env"});
 var express = require("express");
+var mongoose = require("mongoose");
 var app = express();
 const PORT = process.env.PORT || 3000;
 
-var mongoose = require("mongoose");
+mongoose.set('strictQuery', false);
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+}
 
 require("./routes")(app);
 
