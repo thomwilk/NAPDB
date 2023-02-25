@@ -25,10 +25,11 @@ app.use(express.static(__dirname));
 app.use(express.json());
 
 connectDB().then(() => {
-app.listen(PORT, function () {
+  app.listen(PORT, function () {
     connectDB();
     console.log(`Node.js listening on port ${PORT}`);
   });
+})
 
 process.on("SIGINT", () => {
   mongoose.connection.close().then(() => {
