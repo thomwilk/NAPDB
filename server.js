@@ -3,7 +3,7 @@ const { MongoClient } = require("mongodb");
 var express = require("express");
 var mongoose = require("mongoose");
 var app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 
 mongoose.set('strictQuery', false);
 const connectDB = async () => {
