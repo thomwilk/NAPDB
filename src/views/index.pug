@@ -8,9 +8,9 @@ include ./header
           .card.episode-credit
             ul.list-group.list-group-flush
               li.list-group-item.credit-item
-                div(class="sideBySide")
+                div(class="sideBySide" style="width: 40%;")
                   img(class="art" src="/art/"+credit.number+".png")
-                div(class="sideBySide")
+                div(class="sideBySide" style="width: 60%;")
                   a(href="/episode/"+credit.number)
                     h5 #{credit.number}
                     h6.title #{credit.title}
