@@ -3,13 +3,12 @@ const { MongoClient } = require("mongodb");
 var express = require("express");
 var mongoose = require("mongoose");
 var app = express();
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3000;
 
 mongoose.set('strictQuery', false);
 const connectDB = async () => {
   try {
     const conn = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
-    console.log(`MongoDB Connected`);
   } catch (err) {
     console.error(err);
     process.exit(1);
