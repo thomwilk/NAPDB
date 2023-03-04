@@ -2,7 +2,3 @@
 .env
 .prettierrc
 node_modules/
-dbQueries.js
-test.js
-server_bak.js
-GitHubDesktopSetup-x64.exe
