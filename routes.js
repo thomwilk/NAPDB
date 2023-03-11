@@ -1,3 +1,5 @@
+const cookieParser = require('cookie-parser')
+
 const {
   last_ten_credits,
   last_ten_episodes,
@@ -21,7 +23,7 @@ module.exports = function (app) {
     const credits = await last_ten_credits();
     const producers = await top_twenty_producers();
 
-    res.send(
+    res.cookie('new_vistor', true).send(
       indexFunction({
         episodeCredits: episodes,
         recentCredits: credits,

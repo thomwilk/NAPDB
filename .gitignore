@@ -2,3 +2,4 @@
 .env
 .prettierrc
 node_modules/
+.env.bak

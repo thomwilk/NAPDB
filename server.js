@@ -4,6 +4,7 @@ var express = require("express");
 var mongoose = require("mongoose");
 var app = express();
 const PORT = process.env.PORT || 3000;
+const cookieParser = require('cookie-parser')
 
 mongoose.set('strictQuery', false);
 const connectDB = async () => {
@@ -22,6 +23,7 @@ app.set("views", "./src/views");
 
 app.use(express.static(__dirname));
 app.use(express.json());
+app.use(cookieParser())
 
 connectDB().then(() => {
 app.listen(PORT, function () {
