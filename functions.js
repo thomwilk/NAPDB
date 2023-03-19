@@ -5,7 +5,7 @@ const { MongoClient } = require("mongodb");
 let client;
 
 async function init() {
-  client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
+  client = new MongoClient(process.env.MONGO_URI, { useUnifiedTopology: true, useNewUrlParser: true });
   client.connect();
   console.log("Connected to MongoDB");
 }

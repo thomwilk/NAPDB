@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser')
 mongoose.set('strictQuery', false);
 const connectDB = async () => {
   try {
-    const conn = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
+    const conn = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
   } catch (err) {
     console.error(err);
     process.exit(1);

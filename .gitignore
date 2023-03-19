@@ -1,4 +1,10 @@
 .vscode
 .env
+docker-compose.yml
+.dockerignore
+Dockerfile
 node_modules
 .prettierrc
+mongoexpress.txt
+dbQueries.js
+nodemon.json
