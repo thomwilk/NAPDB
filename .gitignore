@@ -5,6 +5,9 @@ docker-compose.yml
 Dockerfile
 node_modules
 .prettierrc
+.private
 mongoexpress.txt
+mongodb.txt
 dbQueries.js
 nodemon.json
+.gitignore

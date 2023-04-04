@@ -2,7 +2,7 @@ const { trim } = require("jquery");
 const { default: mongoose } = require("mongoose");
 require("dotenv").config({ path: "./.env"});
 const MongoClient = require("mongodb").MongoClient;
-const client = new MongoClient(process.env.MONGO_URI, { useUnifiedTopology: true, useNewUrlParser: true });
+const client = new MongoClient(process.env.MONGODB_URI, { useUnifiedTopology: true, useNewUrlParser: true });
 
 async function add_credit(credit) {
   if (credit.producer.trim() == "") return;
