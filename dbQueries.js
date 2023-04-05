@@ -3,7 +3,7 @@ const MongoClient = require('mongodb').MongoClient;
 const uri = process.env.MONGO_URI;
 
 async function updateProducerInCredits() {
-  const client = new MongoClient(uri, { useNewUrlParser: true });
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const db = client.db('NAPDB');
@@ -20,7 +20,7 @@ async function updateProducerInCredits() {
 }
 
 async function deleteProducerCredits(episode_number) {
-  const client = new MongoClient(uri, { useNewUrlParser: true });
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const db = client.db('NAPDB');
@@ -36,7 +36,7 @@ async function deleteProducerCredits(episode_number) {
 }
 
 async function deleteEpisodeCredits(episode_number) {
-  const client = new MongoClient(uri, { useNewUrlParser: true });
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const db = client.db('NAPDB');
@@ -51,7 +51,29 @@ async function deleteEpisodeCredits(episode_number) {
   }
 }
 
-//updateProducerInCredits()
+async function removeDashFromProducer() {
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-deleteProducerCredits(1532)
-deleteEpisodeCredits(1532)
+  try {
+    await client.connect();
+    const db = client.db('NAPDB');
+    const collection = db.collection('credits');
+
+    const updateResult = await collection.updateMany(
+      { "producer": { $regex: / -$/ } },
+      { $set: { "producer": { $trim: { input: "$producer", chars: " -" } } } }
+    );
+
+    console.log(`${updateResult.matchedCount} document(s) matched the query criteria.`);
+    console.log(`${updateResult.modifiedCount} document(s) was/were updated.`);
+  } finally {
+    await client.close();
+  }
+}
+
+removeDashFromProducer();
+
+
+//updateProducerInCredits()
+//deleteProducerCredits(1532)
+//deleteEpisodeCredits(1532)

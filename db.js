@@ -21,7 +21,7 @@ async function add_credit(credit) {
     credit.cryptoAddress = arr[arr.length - 1];
     arr.pop();
     credit.producer = arr.join(" ");
-    credit.producer.replace(/\s*-$/i, "");
+    credit.producer = credit.producer.replace(/ -$/, "");
   }
   await client.db("NAPDB").collection("credits").insertOne(credit);
   await client.close();
