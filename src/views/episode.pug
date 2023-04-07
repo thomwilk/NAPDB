@@ -20,7 +20,7 @@ include ./header
               th(data-filter-control='select', data-sortable='true') Art, Artist
             tbody
               each credit in episodeCredits
-                -var imgSrc = "/art/" + credit.episode_number + ".png"
+                -var imgSrc = "https://www.noagendashow.net/media/cache/cover_small/" + credit.episode_number + ".png"
                 tr
                   td(class="text-center") #{credit.episode_date}
                   td(class="text-center")

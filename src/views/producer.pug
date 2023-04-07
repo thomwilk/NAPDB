@@ -19,7 +19,7 @@ include ./header
                   th(data-filter-control='select', data-sortable='true') Title 
               tbody
                 each credit in producerCredits
-                  - const imgSrc = "/art/" + credit.epNum + ".png"
+                  - const imgSrc = "https://www.noagendashow.net/media/cache/cover_small/" + credit.epNum + ".png"
                   tr
                     td(class="text-center" style="max-width:300px;") 
                       a(target="_self" href="/producer/"+credit.producer) #{credit.producer}
