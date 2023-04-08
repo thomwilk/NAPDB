@@ -6,7 +6,7 @@ const axios = require("axios")
 
 const { add_credit, add_episode, last_episode_saved } = require("./db")
 
-const { extractor, newest_episode, download_art } = require("./extractor")
+const { extractor, newest_episode } = require("./extractor")
 
 const process_episode = async (episode_num = null) => {
   if (episode_num == null) {
@@ -51,8 +51,6 @@ const process_episode = async (episode_num = null) => {
   }
 
   add_episode(episode)  
-
-  await download_art(`${episode_num}`)
 
   const art_credit = {
     producer: episode_artist,
