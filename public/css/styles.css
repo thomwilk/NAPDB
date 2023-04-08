@@ -134,6 +134,7 @@ th {
   display: inline-block;
   height: 80px;
   width: 80px;
+  margin-bottom: 3px;
 }
 
 .dateLength {
