@@ -6,4 +6,3 @@ docker
 .prettierrc
 dbQueries.js
 nodemon.json
-.gitignore
