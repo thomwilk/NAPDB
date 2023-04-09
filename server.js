@@ -5,7 +5,7 @@ var mongoose = require("mongoose");
 var app = express();
 const PORT = process.env.PORT || 3000;
 const cookieParser = require('cookie-parser')
-
+ 
 mongoose.set('strictQuery', false);
 const connectDB = async () => {
   try {
