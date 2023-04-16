@@ -84,7 +84,9 @@ include ./header
       }
 
 
-      $('table').bootstrapTable();
+      $('table').bootstrapTable({
+        
+      });
 
       $('#export-json').click(function() {
           var data = $('table').bootstrapTable('getData', {useCurrentPage: true});
